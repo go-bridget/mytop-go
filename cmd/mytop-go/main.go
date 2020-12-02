@@ -13,7 +13,7 @@ WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 See the License for the specific language governing permissions and
 limitations under the License.
 */
-package cmd
+package main
 
 import (
 	"flag"
@@ -34,7 +34,7 @@ func init() {
 	flag.StringVar(&password, "p","", "Password")
 	flag.StringVar(&hostname, "h","",  "Hostname")
 }
-func Execute() {
+func main() {
 	flag.Parse()
 	m := db.GetMySQLMonitor(user, password, hostname)
 	pl := m.ShowProcessList()
