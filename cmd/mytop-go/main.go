@@ -41,7 +41,7 @@ func main() {
 	m.ShowGlobalStatus()
 	Draw(pl)
 	fmt.Fprint(os.Stdout,"\r \r")
-	for range time.Tick(time.Second * 1) {
+	for range time.Tick(time.Second * 5) {
 		Clear(len(pl) + 1)
 		pl = m.ShowProcessList()
 		m.ShowGlobalStatus()
