@@ -1,32 +1,24 @@
 package terminal
 
 import (
-	"fmt"
-	"os"
-	"runtime"
-	"strings"
-
 	"github.com/fatih/color"
 	"github.com/rodaine/table"
+	"os"
+	"os/exec"
+	"runtime"
 
 	"github.com/carmo-evan/mytop-go/db"
 )
 
-func Clear() {
-	n := 1 // TODO: get actual terminal size
+func Clear() error {
 	if runtime.GOOS == "windows" {
-		clearString := "\r" + strings.Repeat(" ", n) + "\r"
-		fmt.Fprint(os.Stdout, clearString)
-		return
+		cmd := exec.Command("cmd", "/c", "cls") //Windows example, its tested
+		cmd.Stdout = os.Stdout
+		return cmd.Run()
 	}
-
-	c := fmt.Sprintf("\033[%dA", n) //move cursor to the top
-	os.Stdout.Write([]byte(c))
-
-	for _, s := range []string{"\b", "\127", "\b", "\033[K", "\r"} { // "\033[K" for macOS Terminal
-		os.Stdout.Write([]byte(strings.Repeat(s, n)))
-	}
-	os.Stdout.Write([]byte("\r\033[k")) // erases to end of line
+	cmd := exec.Command("clear") //Linux example, its tested
+	cmd.Stdout = os.Stdout
+	return cmd.Run()
 }
 
 func Draw(pl db.ProcessList) {

@@ -45,7 +45,9 @@ func main() {
 			log.Fatalf("Error retrieving process list: %v", err)
 		}
 
-		terminal.Clear()
+		if err := terminal.Clear(); err != nil {
+			log.Fatalf("Error clearing terminal: %v", err)
+		}
 		terminal.Draw(pl)
 
 		select {
