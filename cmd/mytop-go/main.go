@@ -17,13 +17,9 @@ package main
 
 import (
 	"flag"
-	"fmt"
 	"github.com/carmo-evan/mytop-go/db"
-	"github.com/fatih/color"
-	"github.com/rodaine/table"
-	"os"
-	"runtime"
-	"strings"
+	"github.com/carmo-evan/mytop-go/terminal"
+	"log"
 	"time"
 )
 
@@ -36,42 +32,21 @@ func init() {
 }
 func main() {
 	flag.Parse()
-	m := db.GetMySQLMonitor(user, password, hostname)
-	pl := m.ShowProcessList()
-	m.ShowGlobalStatus()
-	Draw(pl)
-	fmt.Fprint(os.Stdout,"\r \r")
-	for range time.Tick(time.Second * 5) {
-		Clear(len(pl) + 1)
-		pl = m.ShowProcessList()
-		Draw(pl)
+	m, err := db.GetMySQLMonitor(user, password, hostname)
+	if err  != nil {
+		log.Fatalf("Error connecting to database: %v", err)
 	}
-}
-
-func Clear(n int) {
-	if runtime.GOOS == "windows" {
-		clearString := "\r" + strings.Repeat(" ", n) + "\r"
-		fmt.Fprint(os.Stdout, clearString)
-		return
+	pl, err := m.ShowProcessList()
+	if err != nil {
+		log.Fatalf("Error retrieving process list: %v", err)
 	}
-
-	c := fmt.Sprintf("\033[%dA", n) //move cursor to the top
-	os.Stdout.Write([]byte(c))
-
-	for _, s := range []string{"\b", "\127", "\b", "\033[K", "\r"} { // "\033[K" for macOS Terminal
-		os.Stdout.Write([]byte(strings.Repeat(s, n)))
+	terminal.Draw(pl)
+	for range time.Tick(time.Second) {
+		terminal.Clear(len(pl) + 1)
+		pl, err = m.ShowProcessList()
+		if err != nil {
+			log.Fatalf("Error retrieving process list: %v", err)
+		}
+		terminal.Draw(pl)
 	}
-	os.Stdout.Write([]byte("\r\033[k")) // erases to end of line
-}
-
-func Draw(pl []db.ProcessList) {
-	headerFmt := color.New(color.FgGreen, color.Underline).SprintfFunc()
-	columnFmt := color.New(color.FgYellow).SprintfFunc()
-	tbl := table.New("ID", "Host", "User", "Db", "Command", "Time", "State", "Info", "Rows Sent", "Rows Examined")
-	tbl.WithHeaderFormatter(headerFmt).WithFirstColumnFormatter(columnFmt)
-
-	for _, r := range pl {
-		tbl.AddRow(r.Id, r.Host, r.User, r.Db, r.Command, r.Time, r.State, r.Info, r.RowsSent, r.RowsExamined)
-	}
-	tbl.Print()
 }

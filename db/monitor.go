@@ -1,7 +1,7 @@
 package db
 
 type Monitor interface {
-	ShowProcessList() []ProcessList
+	ShowProcessList() ([]ProcessList, error)
 	ShowGlobalStatus()
 }
 
