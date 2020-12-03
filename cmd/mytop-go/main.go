@@ -44,7 +44,6 @@ func main() {
 	for range time.Tick(time.Second * 5) {
 		Clear(len(pl) + 1)
 		pl = m.ShowProcessList()
-		m.ShowGlobalStatus()
 		Draw(pl)
 	}
 }
@@ -56,9 +55,10 @@ func Clear(n int) {
 		return
 	}
 
-	fmt.Fprintf(os.Stdout, "\033[%dA", n) //move cursor to the top
+	c := fmt.Sprintf("\033[%dA", n) //move cursor to the top
+	os.Stdout.Write([]byte(c))
 
-	for _, s := range []string{"\b", "\127", "\b", "\033[K", "\x0c", string(27)} { // "\033[K" for macOS Terminal
+	for _, s := range []string{"\b", "\127", "\b", "\033[K", "\r"} { // "\033[K" for macOS Terminal
 		os.Stdout.Write([]byte(strings.Repeat(s, n)))
 	}
 	os.Stdout.Write([]byte("\r\033[k")) // erases to end of line
@@ -67,11 +67,11 @@ func Clear(n int) {
 func Draw(pl []db.ProcessList) {
 	headerFmt := color.New(color.FgGreen, color.Underline).SprintfFunc()
 	columnFmt := color.New(color.FgYellow).SprintfFunc()
-	tbl := table.New("ID", "Host", "User", "Db", "Command", "Time", "State", "Info")
+	tbl := table.New("ID", "Host", "User", "Db", "Command", "Time", "State", "Info", "Rows Sent", "Rows Examined")
 	tbl.WithHeaderFormatter(headerFmt).WithFirstColumnFormatter(columnFmt)
 
 	for _, r := range pl {
-		tbl.AddRow(r.Id, r.Host, r.User, r.Db, r.Command, r.Time, r.State, r.Info)
+		tbl.AddRow(r.Id, r.Host, r.User, r.Db, r.Command, r.Time, r.State, r.Info, r.RowsSent, r.RowsExamined)
 	}
 	tbl.Print()
 }

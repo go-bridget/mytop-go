@@ -15,4 +15,6 @@ type ProcessList struct {
 	Time int `db:"Time"`
 	State string `db:"State"`
 	Info *string `db:"Info"`
+	RowsSent int `db:"Rows_sent"`
+	RowsExamined int `db:"Rows_examined"`
 }
