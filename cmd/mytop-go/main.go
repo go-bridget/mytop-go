@@ -23,27 +23,34 @@ import (
 	"time"
 )
 
-var user, password, hostname string
-
+var user, password, hostname, port, database string
+var delay int
+var noIdle bool
 func init() {
 	flag.StringVar(&user, "u" ,"", "Username")
 	flag.StringVar(&password, "p","", "Password")
 	flag.StringVar(&hostname, "h","",  "Hostname")
+	flag.StringVar(&port, "P","3306",  "Port")
+	flag.StringVar(&database, "d","mysql",  "Database")
+	flag.IntVar(&delay, "s", 5, "Delay")
+	flag.BoolVar(&noIdle, "i", false, "Hide Idle (sleeping) threads")
 }
 func main() {
 	flag.Parse()
-	m, err := db.GetMySQLMonitor(user, password, hostname)
+	m, err := db.GetMySQLMonitor(user, password, hostname, port, database)
 	if err  != nil {
 		log.Fatalf("Error connecting to database: %v", err)
 	}
-	pl, err := m.ShowProcessList()
+
+	pl, err := m.ShowProcessList(noIdle)
 	if err != nil {
 		log.Fatalf("Error retrieving process list: %v", err)
 	}
+
 	terminal.Draw(pl)
-	for range time.Tick(time.Second) {
+	for range time.Tick(time.Second * time.Duration(delay)) {
 		terminal.Clear(len(pl) + 1)
-		pl, err = m.ShowProcessList()
+		pl, err = m.ShowProcessList(noIdle)
 		if err != nil {
 			log.Fatalf("Error retrieving process list: %v", err)
 		}
