@@ -16,44 +16,42 @@ limitations under the License.
 package main
 
 import (
+	"context"
 	"flag"
-	"github.com/carmo-evan/mytop-go/db"
-	"github.com/carmo-evan/mytop-go/terminal"
 	"log"
 	"time"
+
+	"github.com/carmo-evan/mytop-go/db"
+	"github.com/carmo-evan/mytop-go/terminal"
+
+	_ "github.com/go-sql-driver/mysql"
 )
 
-var user, password, hostname, port, database string
-var delay int
-var noIdle bool
-func init() {
-	flag.StringVar(&user, "u" ,"", "Username")
-	flag.StringVar(&password, "p","", "Password")
-	flag.StringVar(&hostname, "h","",  "Hostname")
-	flag.StringVar(&port, "P","3306",  "Port")
-	flag.StringVar(&database, "d","mysql",  "Database")
-	flag.IntVar(&delay, "s", 5, "Delay")
-	flag.BoolVar(&noIdle, "i", false, "Hide Idle (sleeping) threads")
-}
 func main() {
+	config := db.NewOptions()
 	flag.Parse()
-	m, err := db.GetMySQLMonitor(user, password, hostname, port, database)
-	if err  != nil {
+
+	ctx := context.Background()
+
+	monitor := db.NewMySQLMonitor(config)
+
+	if err := monitor.Connect(ctx); err != nil {
 		log.Fatalf("Error connecting to database: %v", err)
 	}
 
-	pl, err := m.ShowProcessList(noIdle)
-	if err != nil {
-		log.Fatalf("Error retrieving process list: %v", err)
-	}
-
-	terminal.Draw(pl)
-	for range time.Tick(time.Second * time.Duration(delay)) {
-		terminal.Clear(len(pl) + 1)
-		pl, err = m.ShowProcessList(noIdle)
+	for {
+		pl, err := monitor.ShowProcessList(ctx)
 		if err != nil {
 			log.Fatalf("Error retrieving process list: %v", err)
 		}
+
+		terminal.Clear()
 		terminal.Draw(pl)
+
+		select {
+		case <-ctx.Done():
+			log.Fatalf("context cancelled")
+		case <-time.After(time.Second * time.Duration(config.Delay)):
+		}
 	}
 }

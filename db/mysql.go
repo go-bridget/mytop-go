@@ -1,36 +1,36 @@
 package db
 
 import (
+	"context"
 	"fmt"
-	_ "github.com/go-sql-driver/mysql"
+	"net"
+
 	"github.com/jmoiron/sqlx"
 )
 
 type MySQLMonitor struct {
-	db *sqlx.DB
+	db      *sqlx.DB
+	options *Options
 }
 
-func (m *MySQLMonitor) ShowProcessList() ([]ProcessList, error) {
-	dest := []ProcessList{}
-	err := m.db.Select(&dest, "SHOW FULL PROCESSLIST;")
-	if err != nil {
-		return dest, err
-	}
-	return dest, nil
+func (m *MySQLMonitor) ShowProcessList(ctx context.Context) (ProcessList, error) {
+	dest := ProcessList{}
+	err := m.db.SelectContext(ctx, &dest, "SHOW FULL PROCESSLIST;")
+	return dest, err
 }
 
-func (m *MySQLMonitor) ShowGlobalStatus() {
-	_, err := m.db.Query("SHOW GLOBAL STATUS;")
-	if err != nil {
-		panic(err)
+func (m *MySQLMonitor) ShowGlobalStatus(ctx context.Context) error {
+	_, err := m.db.QueryContext(ctx, "SHOW GLOBAL STATUS;")
+	return err
+}
+
+func NewMySQLMonitor(o *Options) *MySQLMonitor {
+	return &MySQLMonitor{
+		options: o,
 	}
 }
 
-func GetMySQLMonitor(user, password, hostname string) (Monitor, error) {
-	db, err := sqlx.Connect("mysql", fmt.Sprintf("%v:%v@(%v:3306)/mysql", user, password, hostname))
-	if err != nil {
-		return &MySQLMonitor{}, err
-	}
-	s := MySQLMonitor{db: db}
-	return &s, nil
+func (m *MySQLMonitor) Connect(ctx context.Context) (err error) {
+	m.db, err = sqlx.ConnectContext(ctx, m.options.Driver, fmt.Sprintf("%s:%s@(%s)/%s", m.options.Username, m.options.Password, net.JoinHostPort(m.options.Hostname, m.options.Port), m.options.Database))
+	return
 }
