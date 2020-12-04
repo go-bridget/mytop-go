@@ -24,7 +24,7 @@ func Clear() error {
 func Draw(pl db.ProcessList) {
 	headerFmt := color.New(color.FgGreen, color.Underline).SprintfFunc()
 	columnFmt := color.New(color.FgYellow).SprintfFunc()
-	tbl := table.New("ID", "Host", "User", "Db", "Command", "Time", "State", "Info", "Rows Sent", "Rows Examined")
+	tbl := table.New("ID", "Host", "User", "Db", "Command", "Time", "State", "Info", "Sent", "Examined")
 	tbl.WithHeaderFormatter(headerFmt).WithFirstColumnFormatter(columnFmt)
 
 	for _, r := range pl {

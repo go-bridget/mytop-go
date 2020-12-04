@@ -15,7 +15,11 @@ type MySQLMonitor struct {
 
 func (m *MySQLMonitor) ShowProcessList(ctx context.Context) (ProcessList, error) {
 	dest := ProcessList{}
-	err := m.db.SelectContext(ctx, &dest, "SHOW FULL PROCESSLIST;")
+	if m.options.SkipIdle {
+		err := m.db.SelectContext(ctx, &dest, "SELECT * FROM information_schema.processList WHERE `COMMAND` != 'SLEEP';")
+		return dest, err
+	}
+	err := m.db.SelectContext(ctx, &dest, "SELECT * FROM information_schema.processList;")
 	return dest, err
 }
 

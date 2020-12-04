@@ -13,16 +13,16 @@ type Monitor interface {
 }
 
 type Process struct {
-	Id           int            `db:"Id"`
-	Host         string         `db:"Host"`
-	User         string         `db:"User"`
-	Db           sql.NullString `db:"db"`
-	Command      string         `db:"Command"`
-	Time         int            `db:"Time"`
-	State        string         `db:"State"`
-	Info         sql.NullString `db:"Info"`
-	RowsSent     int            `db:"Rows_sent"`
-	RowsExamined int            `db:"Rows_examined"`
+	Id           int            `db:"ID"`
+	Host         string         `db:"HOST"`
+	User         string         `db:"USER"`
+	Db           sql.NullString `db:"DB"`
+	Command      string         `db:"COMMAND"`
+	Time         int            `db:"TIME"`
+	State        string         `db:"STATE"`
+	Info         sql.NullString `db:"INFO"`
+	RowsSent     int            `db:"ROWS_SENT"`
+	RowsExamined int            `db:"ROWS_EXAMINED"`
 }
 
 type ProcessList []Process
