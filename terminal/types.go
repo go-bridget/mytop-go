@@ -6,9 +6,9 @@ import (
 )
 
 type App struct {
-	*tview.Application
-	*tview.Table
-	*tview.Pages
+	application *tview.Application
+	table *tview.Table
+	pages *tview.Pages
 	Monitor *db.MySQLMonitor
 	Refresh chan struct{}
 }

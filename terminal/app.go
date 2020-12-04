@@ -26,16 +26,20 @@ func newKillInputField() *tview.InputField {
 }
 
 func (app *App) Draw() {
-	app.Application.Draw()
+	app.application.Draw()
+}
+
+func (app *App) Stop() {
+	app.application.Stop()
 }
 
 func (app *App) Init() {
-	app.Pages.AddPage("Table", app.Table,true, true)
-	app.Table.SetInputCapture(app.GetTableInputHandlerFunc())
+	app.pages.AddPage("Table", app.table,true, true)
+	app.table.SetInputCapture(app.getTableInputHandlerFunc())
 }
 
 func (app *App) Run() error {
-	if err := app.SetRoot(app.Pages, true).SetFocus(app.Pages).Run(); err != nil {
+	if err := app.application.SetRoot(app.pages, true).SetFocus(app.pages).Run(); err != nil {
 		return err
 	}
 	return nil
@@ -52,16 +56,16 @@ func newModal (p tview.Primitive, width, height int) tview.Primitive {
 }
 
 func (app *App) SetTableData(pl db.ProcessList) {
-	app.Table.Clear().SetBorders(true)
+	app.table.Clear().SetBorders(true)
 	labels := pl[0].GetLabels()
 
 	for j, label := range labels {
-		app.Table.SetCell(0, j, tview.NewTableCell(label).SetTextColor(tcell.ColorYellow))
+		app.table.SetCell(0, j, tview.NewTableCell(label).SetTextColor(tcell.ColorYellow))
 	}
 
 	for i, p := range pl {
 		for j, label := range labels {
-			app.Table.SetCell(i + 1, j, tview.NewTableCell(p.GetValueByLabel(label)).SetTextColor(tcell.ColorWhite))
+			app.table.SetCell(i + 1, j, tview.NewTableCell(p.GetValueByLabel(label)).SetTextColor(tcell.ColorWhite))
 		}
 	}
 }
