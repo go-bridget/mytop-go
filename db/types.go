@@ -8,16 +8,18 @@ import (
 )
 
 type Process struct {
-	Id           int            `db:"ID"`
+	Id           uint64         `db:"ID"`
 	Host         string         `db:"HOST"`
 	User         string         `db:"USER"`
 	Db           sql.NullString `db:"DB"`
 	Command      string         `db:"COMMAND"`
 	Time         int            `db:"TIME"`
-	State        string         `db:"STATE"`
+	TimeMS       uint64         `db:"TIME_MS"`
+	State        sql.NullString `db:"STATE"`
 	Info         sql.NullString `db:"INFO"`
-	RowsSent     int            `db:"ROWS_SENT"`
-	RowsExamined int            `db:"ROWS_EXAMINED"`
+	RowsRead     uint64         `db:"ROWS_READ"`
+	RowsSent     uint64         `db:"ROWS_SENT"`
+	RowsExamined uint64         `db:"ROWS_EXAMINED"`
 }
 
 type ProcessList []Process

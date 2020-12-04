@@ -1,15 +1,17 @@
 package db
 
-import "strconv"
+import (
+	"fmt"
+)
 
 func GetProcessListLabels() []string {
-	return []string{"ID", "Host", "User", "Db", "Command", "Time", "State", "Info", "Sent", "Examined"}
+	return []string{"ID", "Host", "User", "Db", "Command", "Time", "State", "Info", "Read", "Sent", "Examined"}
 }
 
 func (p *Process) GetValueByLabel(label string) string {
 	switch label {
 	case "ID":
-		return strconv.Itoa(p.Id)
+		return fmt.Sprint(p.Id)
 	case "Host":
 		return p.Host
 	case "User":
@@ -19,15 +21,20 @@ func (p *Process) GetValueByLabel(label string) string {
 	case "Command":
 		return p.Command
 	case "Time":
-		return strconv.Itoa(p.Time)
+		if p.TimeMS > 0 {
+			return fmt.Sprintf("%.3f", float64(p.TimeMS)/1000.0)
+		}
+		return fmt.Sprint(p.Time)
 	case "State":
-		return p.State
+		return p.State.String
 	case "Info":
 		return p.Info.String
+	case "Read":
+		return fmt.Sprint(p.RowsRead)
 	case "Sent":
-		return strconv.Itoa(p.RowsSent)
+		return fmt.Sprint(p.RowsSent)
 	case "Examined":
-		return strconv.Itoa(p.RowsExamined)
+		return fmt.Sprint(p.RowsExamined)
 	}
 	return ""
 }
