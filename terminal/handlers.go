@@ -16,26 +16,56 @@ func (app *App) GetTableInputHandlerFunc() func (event *tcell.EventKey) *tcell.E
 		case 's':
 			app.Monitor.ToggleSortColumn()
 		case 'k':
-			app.killById()
+			app.showKillById()
 		case 'K':
-			// kill all with confirmation
+			app.showKillAll()
 		case 'f':
-			// filter by query
+			app.showFilterByQuery()
 		case 'u':
-			// filter by user
+			app.showFilterByUser()
 		}
 		app.Refresh <- struct{}{}
 		return event
 	}
 }
 
-func (app *App) killById() {
+func (app *App) showFilterByQuery() {
+	// TODO
+}
+
+func (app *App) showFilterByUser() {
+	// TODO
+}
+
+
+func (app *App) showKillById() {
 	// kill by id
 	pageName := "Kill Input Field"
 	inputField := newKillInputField()
 	inputField.SetDoneFunc(app.getKillDoneFunc(inputField))
 	app.Pages.AddPage(pageName, newModal(inputField,31, 3), true, true)
 	app.SetFocus(inputField)
+}
+
+func (app *App) showKillAll() {
+	// kill by id
+	pageName := "Kill All Input Field"
+	button := tview.NewButton("Press Enter to Continue, ESC to cancel")
+	button.SetTitle("Kill All Running Processes?")
+	button.SetLabelColorActivated(tcell.ColorRed)
+	button.SetBackgroundColorActivated(tcell.ColorBlack)
+	button.SetBorder(true)
+	button.SetSelectedFunc(func() {
+		// TODO: Implement Kill All
+		app.Stop()
+	})
+	button.SetBlurFunc(func(key tcell.Key) {
+		if key == tcell.KeyESC {
+			app.Pages.RemovePage(pageName)
+		}
+	})
+	app.Pages.AddPage(pageName, newModal(button,50, 3), true, true)
+	app.SetFocus(button)
 }
 
 func (app *App) getKillDoneFunc(inputField *tview.InputField) func(key tcell.Key) {
