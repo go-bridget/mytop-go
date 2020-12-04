@@ -18,6 +18,7 @@ package main
 import (
 	"context"
 	"flag"
+	"fmt"
 	"github.com/carmo-evan/mytop-go/db"
 	"github.com/carmo-evan/mytop-go/terminal"
 	"github.com/gdamore/tcell/v2"
@@ -38,6 +39,10 @@ func main() {
 		log.Fatalf("Error connecting to database: %v", err)
 	}
 
+	refresh := make(chan struct{})
+
+	var lastPl db.ProcessList
+
 	app := terminal.NewApp()
 	t := terminal.NewTable()
 
@@ -48,13 +53,14 @@ func main() {
 		}
 		switch event.Rune() {
 			case 's':
-				// invert sort order
+				monitor.ToggleSortColumn()
+				refresh <- struct{}{}
 			case 'k':
 				// kill by id
 			case 'K':
 				// kill all with confirmation
 			case 'f':
-			// filter by query
+				// filter by query
 			case 'u':
 				// filter by user
 		}
@@ -64,6 +70,7 @@ func main() {
 	go func() {
 		for {
 			pl, err := monitor.ShowProcessList(ctx)
+			lastPl = pl
 			if err != nil {
 				log.Fatalf("Error retrieving process list: %v", err)
 			}
@@ -71,9 +78,11 @@ func main() {
 			t = terminal.SetTableData(t, pl)
 			app.Draw()
 			select {
-			case <-ctx.Done():
-				log.Fatalf("context cancelled")
-			case <-time.After(time.Second * time.Duration(config.Delay)):
+				case <-ctx.Done():
+					log.Fatalf("context cancelled")
+				case <-time.After(time.Second * time.Duration(config.Delay)):
+				case <-refresh:
+					// do nothing and cause loop to restart
 			}
 		}
 	}()
@@ -81,4 +90,5 @@ func main() {
 	if err := app.SetRoot(t, true).SetFocus(t).Run(); err != nil {
 		log.Fatal(err)
 	}
+	fmt.Println(lastPl)
 }
