@@ -34,7 +34,7 @@ func (app *App) killById() {
 	pageName := "Kill Input Field"
 	inputField := newKillInputField()
 	inputField.SetDoneFunc(app.getKillDoneFunc(inputField))
-	app.Pages.AddPage(pageName, newModal(inputField,40, 10), true, true)
+	app.Pages.AddPage(pageName, newModal(inputField,31, 3), true, true)
 	app.SetFocus(inputField)
 }
 
@@ -42,7 +42,7 @@ func (app *App) getKillDoneFunc(inputField *tview.InputField) func(key tcell.Key
 	return func(key tcell.Key) {
 		pageName := "Kill Input Field"
 		input := inputField.GetText()
-		if input == "" {
+		if input == "" || key == tcell.KeyESC {
 			app.Pages.RemovePage(pageName)
 			return
 		}
