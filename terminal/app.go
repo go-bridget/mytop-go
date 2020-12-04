@@ -25,7 +25,7 @@ func (app *App) Stop() {
 }
 
 func (app *App) Init() {
-	app.pages.AddPage("Table", app.table,true, true)
+	app.pages.AddPage("Table", app.table, true, true)
 	app.table.SetInputCapture(app.getTableInputHandlerFunc())
 }
 
@@ -46,7 +46,7 @@ func (app *App) SetTableData(pl db.ProcessList) {
 
 	for i, p := range pl {
 		for j, label := range labels {
-			app.table.SetCell(i + 1, j, tview.NewTableCell(p.GetValueByLabel(label)).SetTextColor(tcell.ColorWhite))
+			app.table.SetCell(i+1, j, tview.NewTableCell(p.GetValueByLabel(label)).SetTextColor(tcell.ColorWhite))
 		}
 	}
 }

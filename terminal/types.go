@@ -7,8 +7,8 @@ import (
 
 type App struct {
 	application *tview.Application
-	table *tview.Table
-	pages *tview.Pages
-	Monitor *db.MySQLMonitor
-	Refresh chan struct{}
+	table       *tview.Table
+	pages       *tview.Pages
+	Monitor     *db.MySQLMonitor
+	Refresh     chan struct{}
 }

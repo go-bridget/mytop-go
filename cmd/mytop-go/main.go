@@ -50,11 +50,11 @@ func main() {
 			app.SetTableData(pl)
 			app.Draw()
 			select {
-				case <-ctx.Done():
-					log.Fatalf("context cancelled")
-				case <-time.After(time.Second * time.Duration(config.Delay)):
-				case <-app.Refresh:
-					// do nothing and cause loop to restart
+			case <-ctx.Done():
+				log.Fatalf("context cancelled")
+			case <-time.After(time.Second * time.Duration(config.Delay)):
+			case <-app.Refresh:
+				// do nothing and cause loop to restart
 			}
 		}
 	}()

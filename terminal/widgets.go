@@ -11,7 +11,7 @@ func newInputField(label string, acceptanceFunc func(textToCheck string, lastCha
 	return inputField
 }
 
-func newModal (p tview.Primitive, width, height int) tview.Primitive {
+func newModal(p tview.Primitive, width, height int) tview.Primitive {
 	return tview.NewFlex().
 		AddItem(nil, 0, 1, false).
 		AddItem(tview.NewFlex().SetDirection(tview.FlexRow).

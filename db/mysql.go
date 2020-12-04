@@ -70,7 +70,7 @@ func (m *MySQLMonitor) ShowGlobalStatus(ctx context.Context) error {
 
 func NewMySQLMonitor(o *Options) *MySQLMonitor {
 	return &MySQLMonitor{
-		options: o,
+		options:    o,
 		sortColumn: 6,
 	}
 }

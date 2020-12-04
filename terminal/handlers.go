@@ -7,8 +7,8 @@ import (
 	"strconv"
 )
 
-func (app *App) getTableInputHandlerFunc() func (event *tcell.EventKey) *tcell.EventKey {
-	return func (event *tcell.EventKey) *tcell.EventKey {
+func (app *App) getTableInputHandlerFunc() func(event *tcell.EventKey) *tcell.EventKey {
+	return func(event *tcell.EventKey) *tcell.EventKey {
 		if event.Key() == tcell.KeyCtrlC {
 			app.Stop()
 		}
@@ -33,7 +33,7 @@ func (app *App) showFilterByQuery() {
 	pageName := "Filter By Query Input Field"
 	inputField := newInputField("Filter By Query: ", tview.InputFieldMaxLength(250))
 	inputField.SetText(app.Monitor.QueryFilter)
-	inputField.SetDoneFunc(func (key tcell.Key){
+	inputField.SetDoneFunc(func(key tcell.Key) {
 		input := inputField.GetText()
 		if key == tcell.KeyESC {
 			app.pages.RemovePage(pageName)
@@ -43,7 +43,7 @@ func (app *App) showFilterByQuery() {
 		app.pages.RemovePage(pageName)
 		app.Refresh <- struct{}{}
 	})
-	app.pages.AddPage(pageName, newModal(inputField,31, 3), true, true)
+	app.pages.AddPage(pageName, newModal(inputField, 31, 3), true, true)
 	app.application.SetFocus(inputField)
 }
 
@@ -51,7 +51,7 @@ func (app *App) showFilterByUser() {
 	pageName := "Filter By User Input Field"
 	inputField := newInputField("Filter By User: ", tview.InputFieldMaxLength(250))
 	inputField.SetText(app.Monitor.UserFilter)
-	inputField.SetDoneFunc(func (key tcell.Key){
+	inputField.SetDoneFunc(func(key tcell.Key) {
 		input := inputField.GetText()
 		if key == tcell.KeyESC {
 			app.pages.RemovePage(pageName)
@@ -61,17 +61,16 @@ func (app *App) showFilterByUser() {
 		app.pages.RemovePage(pageName)
 		app.Refresh <- struct{}{}
 	})
-	app.pages.AddPage(pageName, newModal(inputField,31, 3), true, true)
+	app.pages.AddPage(pageName, newModal(inputField, 31, 3), true, true)
 	app.application.SetFocus(inputField)
 }
-
 
 func (app *App) showKillById() {
 	// kill by id
 	pageName := "Kill Input Field"
 	inputField := newInputField("Enter PID to kill: ", tview.InputFieldInteger)
 	inputField.SetDoneFunc(app.getKillDoneFunc(inputField))
-	app.pages.AddPage(pageName, newModal(inputField,31, 3), true, true)
+	app.pages.AddPage(pageName, newModal(inputField, 31, 3), true, true)
 	app.application.SetFocus(inputField)
 }
 
@@ -92,7 +91,7 @@ func (app *App) showKillAll() {
 			app.pages.RemovePage(pageName)
 		}
 	})
-	app.pages.AddPage(pageName, newModal(button,50, 3), true, true)
+	app.pages.AddPage(pageName, newModal(button, 50, 3), true, true)
 	app.application.SetFocus(button)
 }
 
