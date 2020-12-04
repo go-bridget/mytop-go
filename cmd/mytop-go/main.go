@@ -18,10 +18,8 @@ package main
 import (
 	"context"
 	"flag"
-	"fmt"
 	"github.com/carmo-evan/mytop-go/db"
 	"github.com/carmo-evan/mytop-go/terminal"
-	"github.com/gdamore/tcell/v2"
 	_ "github.com/go-sql-driver/mysql"
 	"log"
 	"time"
@@ -39,56 +37,29 @@ func main() {
 		log.Fatalf("Error connecting to database: %v", err)
 	}
 
-	refresh := make(chan struct{})
+	app := terminal.NewApp(monitor)
 
-	var lastPl db.ProcessList
-
-	app := terminal.NewApp()
-	t := terminal.NewTable()
-
-	// TODO: abstract out into a package
-	app.SetInputCapture(func (event *tcell.EventKey) *tcell.EventKey {
-		if event.Key() == tcell.KeyCtrlC {
-			app.Stop()
-		}
-		switch event.Rune() {
-			case 's':
-				monitor.ToggleSortColumn()
-				refresh <- struct{}{}
-			case 'k':
-				// kill by id
-			case 'K':
-				// kill all with confirmation
-			case 'f':
-				// filter by query
-			case 'u':
-				// filter by user
-		}
-		return event
-	})
+	app.Init()
 
 	go func() {
 		for {
 			pl, err := monitor.ShowProcessList(ctx)
-			lastPl = pl
 			if err != nil {
 				log.Fatalf("Error retrieving process list: %v", err)
 			}
-
-			t = terminal.SetTableData(t, pl)
+			app.SetTableData(pl)
 			app.Draw()
 			select {
 				case <-ctx.Done():
 					log.Fatalf("context cancelled")
 				case <-time.After(time.Second * time.Duration(config.Delay)):
-				case <-refresh:
+				case <-app.Refresh:
 					// do nothing and cause loop to restart
 			}
 		}
 	}()
-
-	if err := app.SetRoot(t, true).SetFocus(t).Run(); err != nil {
+	// Run blocks until app.Stop is called
+	if err := app.Run(); err != nil {
 		log.Fatal(err)
 	}
-	fmt.Println(lastPl)
 }

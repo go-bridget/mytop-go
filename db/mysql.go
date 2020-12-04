@@ -25,6 +25,12 @@ func (m *MySQLMonitor) GetProcessColumnCount() (int, error) {
 	return count, err
 }
 
+func (m *MySQLMonitor) Kill(pid int) error {
+	query := fmt.Sprintf("KILL %v;", pid)
+	_, err := m.db.Exec(query)
+	return err
+}
+
 func (m *MySQLMonitor) ShowProcessList(ctx context.Context) (ProcessList, error) {
 	dest := ProcessList{}
 	if m.options.SkipIdle {
