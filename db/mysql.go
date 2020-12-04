@@ -3,16 +3,17 @@ package db
 import (
 	"context"
 	"fmt"
-	"net"
-
 	"github.com/jmoiron/sqlx"
+	"net"
 )
 
 type MySQLMonitor struct {
-	db      *sqlx.DB
-	options *Options
-	sortColumn int
+	db          *sqlx.DB
+	options     *Options
+	sortColumn  int
 	columnCount int
+	QueryFilter string
+	UserFilter  string
 }
 
 func (m *MySQLMonitor) ToggleSortColumn() {
@@ -33,12 +34,31 @@ func (m *MySQLMonitor) Kill(pid int) error {
 
 func (m *MySQLMonitor) ShowProcessList(ctx context.Context) (ProcessList, error) {
 	dest := ProcessList{}
+	query := "SELECT * FROM information_schema.processList "
+	filtersCount := 0
 	if m.options.SkipIdle {
-		query := fmt.Sprintf("SELECT * FROM information_schema.processList WHERE `COMMAND` != 'SLEEP' ORDER BY %v ASC;", m.sortColumn)
-		err := m.db.SelectContext(ctx, &dest, query)
-		return dest, err
+		query = query + "WHERE `COMMAND` != 'SLEEP' "
+		filtersCount += 1
 	}
-	query := fmt.Sprintf("SELECT * FROM information_schema.processList ORDER BY %v ASC;", m.sortColumn)
+	if m.QueryFilter != "" {
+		filter := fmt.Sprintf(`INFO LIKE "%v%%" `, m.QueryFilter)
+		if filtersCount > 0 {
+			query = query + "AND " + filter
+		} else {
+			query = query + "WHERE " + filter
+		}
+		filtersCount += 1
+	}
+	if m.UserFilter != "" {
+		filter := fmt.Sprintf(`USER LIKE "%v%%" `, m.UserFilter)
+		if filtersCount > 0 {
+			query = query + "AND " + filter
+		} else {
+			query = query + "WHERE " + filter
+		}
+		filtersCount += 1
+	}
+	query = query + fmt.Sprintf("ORDER BY %v ASC", m.sortColumn)
 	err := m.db.SelectContext(ctx, &dest, query)
 	return dest, err
 }

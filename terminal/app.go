@@ -38,7 +38,7 @@ func (app *App) Run() error {
 
 func (app *App) SetTableData(pl db.ProcessList) {
 	app.table.Clear().SetBorders(true)
-	labels := pl[0].GetLabels()
+	labels := db.GetProcessListLabels()
 
 	for j, label := range labels {
 		app.table.SetCell(0, j, tview.NewTableCell(label).SetTextColor(tcell.ColorYellow))

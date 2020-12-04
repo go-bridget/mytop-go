@@ -2,7 +2,7 @@ package db
 
 import "strconv"
 
-func (p *Process) GetLabels() []string {
+func GetProcessListLabels() []string {
 	return []string{"ID", "Host", "User", "Db", "Command", "Time", "State", "Info", "Sent", "Examined"}
 }
 

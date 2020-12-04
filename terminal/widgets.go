@@ -2,11 +2,11 @@ package terminal
 
 import "github.com/rivo/tview"
 
-func newKillInputField() *tview.InputField {
+func newInputField(label string, acceptanceFunc func(textToCheck string, lastChar rune) bool) *tview.InputField {
 	inputField := tview.NewInputField()
-	inputField.SetLabel("Enter PID to kill: ")
+	inputField.SetLabel(label)
 	inputField.SetFieldWidth(10)
-	inputField.SetAcceptanceFunc(tview.InputFieldInteger)
+	inputField.SetAcceptanceFunc(acceptanceFunc)
 	inputField.SetBorder(true)
 	return inputField
 }
