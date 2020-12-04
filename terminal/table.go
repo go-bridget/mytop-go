@@ -1,34 +1,31 @@
 package terminal
 
 import (
-	"github.com/fatih/color"
-	"github.com/rodaine/table"
-	"os"
-	"os/exec"
-	"runtime"
-
 	"github.com/carmo-evan/mytop-go/db"
+	"github.com/gdamore/tcell/v2"
+	"github.com/rivo/tview"
 )
 
-func Clear() error {
-	if runtime.GOOS == "windows" {
-		cmd := exec.Command("cmd", "/c", "cls") //Windows example, its tested
-		cmd.Stdout = os.Stdout
-		return cmd.Run()
-	}
-	cmd := exec.Command("clear") //Linux example, its tested
-	cmd.Stdout = os.Stdout
-	return cmd.Run()
+func NewApp() *tview.Application {
+	return tview.NewApplication()
 }
 
-func Draw(pl db.ProcessList) {
-	headerFmt := color.New(color.FgGreen, color.Underline).SprintfFunc()
-	columnFmt := color.New(color.FgYellow).SprintfFunc()
-	tbl := table.New("ID", "Host", "User", "Db", "Command", "Time", "State", "Info", "Sent", "Examined")
-	tbl.WithHeaderFormatter(headerFmt).WithFirstColumnFormatter(columnFmt)
+func NewTable() *tview.Table {
+	return tview.NewTable()
+}
 
-	for _, r := range pl {
-		tbl.AddRow(r.Id, r.Host, r.User, r.Db.String, r.Command, r.Time, r.State, r.Info.String, r.RowsSent, r.RowsExamined)
+func SetTableData(t *tview.Table, pl db.ProcessList) *tview.Table {
+	t.Clear().SetBorders(true)
+	labels := pl[0].GetLabels()
+
+	for j, label := range labels {
+		t.SetCell(0, j, tview.NewTableCell(label).SetTextColor(tcell.ColorYellow))
 	}
-	tbl.Print()
+
+	for i, p := range pl {
+		for j, label := range labels {
+			t.SetCell(i + 1, j, tview.NewTableCell(p.GetValueByLabel(label)).SetTextColor(tcell.ColorWhite))
+		}
+	}
+	return t
 }

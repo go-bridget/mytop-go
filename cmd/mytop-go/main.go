@@ -18,13 +18,12 @@ package main
 import (
 	"context"
 	"flag"
-	"log"
-	"time"
-
 	"github.com/carmo-evan/mytop-go/db"
 	"github.com/carmo-evan/mytop-go/terminal"
-
+	"github.com/gdamore/tcell/v2"
 	_ "github.com/go-sql-driver/mysql"
+	"log"
+	"time"
 )
 
 func main() {
@@ -39,21 +38,47 @@ func main() {
 		log.Fatalf("Error connecting to database: %v", err)
 	}
 
-	for {
-		pl, err := monitor.ShowProcessList(ctx)
-		if err != nil {
-			log.Fatalf("Error retrieving process list: %v", err)
-		}
+	app := terminal.NewApp()
+	t := terminal.NewTable()
 
-		if err := terminal.Clear(); err != nil {
-			log.Fatalf("Error clearing terminal: %v", err)
+	// TODO: abstract out into a package
+	app.SetInputCapture(func (event *tcell.EventKey) *tcell.EventKey {
+		if event.Key() == tcell.KeyCtrlC {
+			app.Stop()
 		}
-		terminal.Draw(pl)
+		switch event.Rune() {
+			case 's':
+				// invert sort order
+			case 'k':
+				// kill by id
+			case 'K':
+				// kill all with confirmation
+			case 'f':
+			// filter by query
+			case 'u':
+				// filter by user
+		}
+		return event
+	})
 
-		select {
-		case <-ctx.Done():
-			log.Fatalf("context cancelled")
-		case <-time.After(time.Second * time.Duration(config.Delay)):
+	go func() {
+		for {
+			pl, err := monitor.ShowProcessList(ctx)
+			if err != nil {
+				log.Fatalf("Error retrieving process list: %v", err)
+			}
+
+			t = terminal.SetTableData(t, pl)
+			app.Draw()
+			select {
+			case <-ctx.Done():
+				log.Fatalf("context cancelled")
+			case <-time.After(time.Second * time.Duration(config.Delay)):
+			}
 		}
+	}()
+
+	if err := app.SetRoot(t, true).SetFocus(t).Run(); err != nil {
+		log.Fatal(err)
 	}
 }
