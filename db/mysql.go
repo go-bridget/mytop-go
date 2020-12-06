@@ -8,16 +8,20 @@ import (
 )
 
 type MySQLMonitor struct {
-	db          *sqlx.DB
-	options     *Options
-	sortColumn  int
-	columnCount int
-	QueryFilter string
-	UserFilter  string
+	db           *sqlx.DB
+	options      *Options
+	sortColumn   int
+	columnCount  int
+	QueryFilter  string
+	UserFilter   string
 }
 
 func (m *MySQLMonitor) ToggleSortColumn() {
 	m.sortColumn = (m.sortColumn % m.columnCount) + 1
+}
+
+func (m *MySQLMonitor) SortColumn() int {
+	return m.sortColumn
 }
 
 func (m *MySQLMonitor) GetProcessColumnCount() (int, error) {
@@ -41,7 +45,7 @@ func (m *MySQLMonitor) ShowProcessList(ctx context.Context) (ProcessList, error)
 		filtersCount += 1
 	}
 	if m.QueryFilter != "" {
-		filter := fmt.Sprintf(`INFO LIKE "%v%%" `, m.QueryFilter)
+		filter := fmt.Sprintf(`INFO LIKE "%%%v%%" `, m.QueryFilter)
 		if filtersCount > 0 {
 			query = query + "AND " + filter
 		} else {
@@ -50,7 +54,7 @@ func (m *MySQLMonitor) ShowProcessList(ctx context.Context) (ProcessList, error)
 		filtersCount += 1
 	}
 	if m.UserFilter != "" {
-		filter := fmt.Sprintf(`USER LIKE "%v%%" `, m.UserFilter)
+		filter := fmt.Sprintf(`USER LIKE "%%%v%%" `, m.UserFilter)
 		if filtersCount > 0 {
 			query = query + "AND " + filter
 		} else {
@@ -81,5 +85,8 @@ func (m *MySQLMonitor) Connect(ctx context.Context) (err error) {
 		return err
 	}
 	m.columnCount, err = m.GetProcessColumnCount()
+	if err != nil {
+		return err
+	}
 	return err
 }

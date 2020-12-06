@@ -1,6 +1,7 @@
 package terminal
 
 import (
+	"fmt"
 	"github.com/carmo-evan/mytop-go/db"
 	"github.com/gdamore/tcell/v2"
 	"github.com/rivo/tview"
@@ -27,6 +28,7 @@ func (app *App) Stop() {
 func (app *App) Init() {
 	app.pages.AddPage("Table", app.table, true, true)
 	app.table.SetInputCapture(app.getTableInputHandlerFunc())
+
 }
 
 func (app *App) Run() error {
@@ -40,13 +42,24 @@ func (app *App) SetTableData(pl db.ProcessList) {
 	app.table.Clear().SetBorders(true)
 	labels := db.GetProcessListLabels()
 
+	// header
 	for j, label := range labels {
-		app.table.SetCell(0, j, tview.NewTableCell(label).SetTextColor(tcell.ColorYellow))
+		c := tview.NewTableCell(label).SetTextColor(tcell.ColorYellow).SetExpansion(1)
+		if j == app.Monitor.SortColumn() - 1 {
+			c.SetTextColor(tcell.ColorLime)
+		}
+		app.table.SetCell(0, j, c)
 	}
 
+	// rows
 	for i, p := range pl {
 		for j, label := range labels {
-			app.table.SetCell(i+1, j, tview.NewTableCell(p.GetValueByLabel(label)).SetTextColor(tcell.ColorWhite))
+			v := p.GetValueByLabel(label)
+			if len(v) > 70 {
+				v = fmt.Sprintf("%.70q...", v)
+			}
+			c := tview.NewTableCell(v).SetTextColor(tcell.ColorWhite).SetExpansion(1)
+			app.table.SetCell(i+1, j, c)
 		}
 	}
 }

@@ -5,7 +5,7 @@ import (
 )
 
 func GetProcessListLabels() []string {
-	return []string{"ID", "Host", "User", "Db", "Command", "Time", "State", "Info", "Read", "Sent", "Examined"}
+	return []string{"ID", "Host", "User", "Db", "Command", "Time", "State", "Read", "Sent", "Examined", "Query"}
 }
 
 func (p *Process) GetValueByLabel(label string) string {
@@ -27,7 +27,7 @@ func (p *Process) GetValueByLabel(label string) string {
 		return fmt.Sprint(p.Time)
 	case "State":
 		return p.State.String
-	case "Info":
+	case "Query":
 		return p.Info.String
 	case "Read":
 		return fmt.Sprint(p.RowsRead)

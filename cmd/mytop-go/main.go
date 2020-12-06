@@ -18,6 +18,7 @@ package main
 import (
 	"context"
 	"flag"
+	"fmt"
 	"github.com/carmo-evan/mytop-go/db"
 	"github.com/carmo-evan/mytop-go/terminal"
 	_ "github.com/go-sql-driver/mysql"
@@ -42,15 +43,23 @@ func main() {
 	app.Init()
 
 	go func() {
+		defer func() {
+			if r := recover(); r != nil {
+				app.Stop()
+				fmt.Println("Recovered: ", r)
+			}
+		}()
 		for {
 			pl, err := monitor.ShowProcessList(ctx)
 			if err != nil {
+				app.Stop()
 				log.Fatalf("Error retrieving process list: %v", err)
 			}
 			app.SetTableData(pl)
 			app.Draw()
 			select {
 			case <-ctx.Done():
+				app.Stop()
 				log.Fatalf("context cancelled")
 			case <-time.After(time.Second * time.Duration(config.Delay)):
 			case <-app.Refresh:

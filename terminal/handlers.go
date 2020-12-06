@@ -13,6 +13,8 @@ func (app *App) getTableInputHandlerFunc() func(event *tcell.EventKey) *tcell.Ev
 			app.Stop()
 		}
 		switch event.Rune() {
+		case 'q':
+			app.Stop()
 		case 's':
 			app.Monitor.ToggleSortColumn()
 		case 'k':
