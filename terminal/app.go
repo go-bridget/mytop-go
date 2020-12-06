@@ -12,6 +12,7 @@ func NewApp(monitor *db.MySQLMonitor) *App {
 		tview.NewApplication(),
 		tview.NewTable(),
 		tview.NewPages(),
+		nil,
 		monitor,
 		make(chan struct{}),
 	}
@@ -28,11 +29,19 @@ func (app *App) Stop() {
 func (app *App) Init() {
 	app.pages.AddPage("Table", app.table, true, true)
 	app.table.SetInputCapture(app.getTableInputHandlerFunc())
-
+	app.table.SetBorderPadding(0, 1, 0, 0)
+	app.frame = tview.NewFrame(app.pages)
+	h := fmt.Sprintf("s: change sort column    " +
+		"f: filter by query    " +
+		"u: filter by user    " +
+		"t: filter by time    " +
+		"k: kill process by PID    " +
+		"K: kill all displayed processes")
+	app.frame.AddText(h, false, tview.AlignLeft, tcell.ColorWhite)
 }
 
 func (app *App) Run() error {
-	if err := app.application.SetRoot(app.pages, true).SetFocus(app.pages).Run(); err != nil {
+	if err := app.application.SetRoot(app.frame, true).SetFocus(app.frame).Run(); err != nil {
 		return err
 	}
 	return nil

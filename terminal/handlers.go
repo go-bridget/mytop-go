@@ -25,6 +25,8 @@ func (app *App) getTableInputHandlerFunc() func(event *tcell.EventKey) *tcell.Ev
 			app.showFilterByQuery()
 		case 'u':
 			app.showFilterByUser()
+		case 't':
+			app.showFilterByTime()
 		}
 		app.Refresh <- struct{}{}
 		return event
@@ -42,6 +44,25 @@ func (app *App) showFilterByQuery() {
 			return
 		}
 		app.Monitor.QueryFilter = input
+		app.pages.RemovePage(pageName)
+		app.Refresh <- struct{}{}
+	})
+	app.pages.AddPage(pageName, newModal(inputField, 31, 3), true, true)
+	app.application.SetFocus(inputField)
+}
+
+func (app *App) showFilterByTime() {
+	pageName := "Filter By Time Input Field"
+	inputField := newInputField("Filter By Time: ", tview.InputFieldMaxLength(250))
+	inputField.SetText(app.Monitor.TimeFilter)
+	inputField.SetAcceptanceFunc(tview.InputFieldInteger)
+	inputField.SetDoneFunc(func(key tcell.Key) {
+		input := inputField.GetText()
+		if key == tcell.KeyESC {
+			app.pages.RemovePage(pageName)
+			return
+		}
+		app.Monitor.TimeFilter = input
 		app.pages.RemovePage(pageName)
 		app.Refresh <- struct{}{}
 	})

@@ -9,6 +9,7 @@ type App struct {
 	application *tview.Application
 	table       *tview.Table
 	pages       *tview.Pages
+	frame 		*tview.Frame
 	Monitor     *db.MySQLMonitor
 	Refresh     chan struct{}
 }

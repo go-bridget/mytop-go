@@ -14,6 +14,7 @@ type MySQLMonitor struct {
 	columnCount  int
 	QueryFilter  string
 	UserFilter   string
+	TimeFilter	 string
 }
 
 func (m *MySQLMonitor) ToggleSortColumn() {
@@ -55,6 +56,15 @@ func (m *MySQLMonitor) ShowProcessList(ctx context.Context) (ProcessList, error)
 	}
 	if m.UserFilter != "" {
 		filter := fmt.Sprintf(`USER LIKE "%%%v%%" `, m.UserFilter)
+		if filtersCount > 0 {
+			query = query + "AND " + filter
+		} else {
+			query = query + "WHERE " + filter
+		}
+		filtersCount += 1
+	}
+	if m.TimeFilter != "" {
+		filter := fmt.Sprintf(`TIME >= %v `, m.TimeFilter)
 		if filtersCount > 0 {
 			query = query + "AND " + filter
 		} else {
