@@ -55,6 +55,7 @@ func main() {
 				app.Stop()
 				log.Fatalf("Error retrieving process list: %v", err)
 			}
+			monitor.ProcessList = pl
 			app.SetTableData(pl)
 			app.Draw()
 			select {

@@ -107,6 +107,9 @@ func (app *App) showKillAll() {
 	button.SetBorder(true)
 	button.SetSelectedFunc(func() {
 		// TODO: Implement Kill All
+		for _, p := range app.Monitor.ProcessList {
+			app.Monitor.Kill(int(p.Id))
+		}
 		app.Stop()
 	})
 	button.SetBlurFunc(func(key tcell.Key) {
@@ -136,6 +139,7 @@ func (app *App) getKillDoneFunc(inputField *tview.InputField) func(key tcell.Key
 			log.Fatalf("Error while killing process: %v", err)
 		}
 		app.pages.RemovePage(pageName)
+		app.Refresh <- struct{}{}
 	}
 
 }

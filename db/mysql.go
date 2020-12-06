@@ -15,6 +15,7 @@ type MySQLMonitor struct {
 	QueryFilter  string
 	UserFilter   string
 	TimeFilter	 string
+	ProcessList  ProcessList
 }
 
 func (m *MySQLMonitor) ToggleSortColumn() {
