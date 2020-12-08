@@ -1,6 +1,10 @@
 # mytop-go 
 ## display MySQL server performance info like 'mytop'
 
+### Installation
+
+`go get github.com/carmo-evan/mytop-go/cmd/mytop-go`
+
 ### The Basics
 
 mytop-go was inspired by the MySQL monitoring tool mytop. mytop-go will connect to a MySQL server and periodically run the SHOW PROCESSLIST command and attempt to summarize the information from them in a useful format.
