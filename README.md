@@ -11,6 +11,8 @@ mytop-go was inspired by the MySQL monitoring tool mytop. mytop-go will connect 
 
 The program lists as many threads as can fit on screen. The display looks like:
 
+![mytop-go display example](https://i.imgur.com/t0s5Ejp.png "mytop-go")
+
 Often times the query info is what you are really interested in, so it is good to run mytop-go in an terminal that is wider than the normal 80 columns if possible
 
 
