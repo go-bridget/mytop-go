@@ -1,4 +1,4 @@
-#mytop-go 
+# mytop-go 
 ## display MySQL server performance info like 'mytop'
 
 ### The Basics
