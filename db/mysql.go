@@ -3,19 +3,20 @@ package db
 import (
 	"context"
 	"fmt"
-	"github.com/jmoiron/sqlx"
 	"net"
+
+	"github.com/jmoiron/sqlx"
 )
 
 type MySQLMonitor struct {
-	db           *sqlx.DB
-	options      *Options
-	sortColumn   int
-	columnCount  int
-	QueryFilter  string
-	UserFilter   string
-	TimeFilter	 string
-	ProcessList  ProcessList
+	db          *sqlx.DB
+	options     *Options
+	sortColumn  int
+	columnCount int
+	QueryFilter string
+	UserFilter  string
+	TimeFilter  string
+	ProcessList ProcessList
 }
 
 func (m *MySQLMonitor) ToggleSortColumn() {

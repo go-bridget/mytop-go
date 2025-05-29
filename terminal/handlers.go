@@ -1,10 +1,11 @@
 package terminal
 
 import (
-	"github.com/gdamore/tcell/v2"
-	"github.com/rivo/tview"
 	"log"
 	"strconv"
+
+	"github.com/gdamore/tcell/v2"
+	"github.com/rivo/tview"
 )
 
 func (app *App) getTableInputHandlerFunc() func(event *tcell.EventKey) *tcell.EventKey {
@@ -112,7 +113,7 @@ func (app *App) showKillAll() {
 		}
 		app.Stop()
 	})
-	button.SetBlurFunc(func(key tcell.Key) {
+	button.SetExitFunc(func(key tcell.Key) {
 		if key == tcell.KeyESC {
 			app.pages.RemovePage(pageName)
 		}

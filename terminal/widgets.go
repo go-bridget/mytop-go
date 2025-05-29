@@ -1,6 +1,8 @@
 package terminal
 
-import "github.com/rivo/tview"
+import (
+	"github.com/rivo/tview"
+)
 
 func newInputField(label string, acceptanceFunc func(textToCheck string, lastChar rune) bool) *tview.InputField {
 	inputField := tview.NewInputField()

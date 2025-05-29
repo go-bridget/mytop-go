@@ -1,22 +1,22 @@
 # mytop-go 
-## display MySQL server performance info like 'mytop'
 
-### Installation
+Display MySQL server performance info like 'mytop'.
 
-`go get github.com/carmo-evan/mytop-go/cmd/mytop-go`
+## Installation
 
-### The Basics
+`go get github.com/go-bridget/mytop-go/cmd/mytop@master`
 
-mytop-go was inspired by the MySQL monitoring tool mytop. mytop-go will connect to a MySQL server and periodically run the SHOW PROCESSLIST command and attempt to summarize the information from them in a useful format
+## The Basics
+
+mytop-go will connect to a MySQL server and periodically run the `SHOW PROCESSLIST` command and attempt to summarize the information from them in a useful format.
 
 The program lists as many threads as can fit on screen. The display looks like:
 
 ![mytop-go display example](https://i.imgur.com/t0s5Ejp.png "mytop-go")
 
-Often times the query info is what you are really interested in, so it is good to run mytop-go in an terminal that is wider than the normal 80 columns if possible
+Often times the query info is what you are really interested in, so it is good to run mytop-go in an terminal that is wider than the normal 80 columns if possible.
 
-
-### Arguments
+## Arguments
 
 mytop-go handles only short command-line arguments.
 
@@ -28,7 +28,7 @@ mytop-go handles only short command-line arguments.
 - **-d** Database. Use if you'd like mytop-go to connect to a specific database by default. Default: ''mysql''
 - **-i** Idle.Specify if you want idle (sleeping) threads to appear in the list
 
-### Shortcut Keys
+## Shortcut Keys
 
 The following keys perform various actions while mytop-go is running.
 
@@ -39,3 +39,8 @@ The following keys perform various actions while mytop-go is running.
 - **k** - Kill a thread by PID
 - **K** - Kill all user read queries
 - **q** - Stop mytop-go
+
+## Contributors
+
+- Tit Petric @titpetric
+- Evan do Carmo @carmo-evan

@@ -2,9 +2,11 @@ package terminal
 
 import (
 	"fmt"
-	"github.com/carmo-evan/mytop-go/db"
+
 	"github.com/gdamore/tcell/v2"
 	"github.com/rivo/tview"
+
+	"github.com/go-bridget/mytop-go/db"
 )
 
 func NewApp(monitor *db.MySQLMonitor) *App {
@@ -54,7 +56,7 @@ func (app *App) SetTableData(pl db.ProcessList) {
 	// header
 	for j, label := range labels {
 		c := tview.NewTableCell(label).SetTextColor(tcell.ColorYellow).SetExpansion(1)
-		if j == app.Monitor.SortColumn() - 1 {
+		if j == app.Monitor.SortColumn()-1 {
 			c.SetTextColor(tcell.ColorLime)
 		}
 		app.table.SetCell(0, j, c)
